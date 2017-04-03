@@ -15,7 +15,7 @@ func GetSpecISO8583() []FieldDescription {
 
 	iso8583[0] = FieldDescription{ContentType: "n", MaxLen: 4, LenType: "fixed", Label: "Message Type Indicator"}
 	iso8583[1] = FieldDescription{ContentType: "b", MaxLen: 8, LenType: "fixed", Label: "Bitmap"}
-	iso8583[2] = FieldDescription{ContentType: "n", MaxLen: 19, LenType: "llvar", Label: "Primary account number (PAN)"}
+	iso8583[2] = FieldDescription{ContentType: "n", MinLen: 12, MaxLen: 19, LenType: "llvar", Label: "Primary account number (PAN)"}
 	iso8583[3] = FieldDescription{ContentType: "n", MaxLen: 6, LenType: "fixed", Label: "Processing code"}
 	iso8583[4] = FieldDescription{ContentType: "n", MaxLen: 12, LenType: "fixed", Label: "Amount, transaction"}
 	iso8583[5] = FieldDescription{ContentType: "n", MaxLen: 12, LenType: "fixed", Label: "Amount, settlement"}
