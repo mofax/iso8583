@@ -186,8 +186,7 @@ func extractFieldFromElements(spec []FieldDescription, field int, str string) (s
 	return extractedField, substr, nil
 }
 
-func unpackElements(bitmap []int64, elements string) (ElementsType, error) {
-	spec := GetSpecISO8583()
+func unpackElements(bitmap []int64, elements string, spec []FieldDescription) (ElementsType, error) {
 	var elem ElementsType
 	var m = make(map[int64]string)
 	currentString := elements
@@ -227,7 +226,7 @@ func Parse(iso string, spec []FieldDescription) (IsoStruct, error) {
 		return q, err
 	}
 
-	elements, err := unpackElements(bitmap, elementString)
+	elements, err := unpackElements(bitmap, elementString, spec)
 	if err != nil {
 		return q, err
 	}
