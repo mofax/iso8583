@@ -28,7 +28,7 @@ func (e *ElementsType) GetElements() map[int64]string {
 
 // IsoStruct is an iso8583 container
 type IsoStruct struct {
-	Spec     []FieldDescription
+	Spec     Spec
 	Mti      MtiType
 	Bitmap   []int64
 	Elements ElementsType
@@ -73,6 +73,32 @@ func (iso *IsoStruct) AddField(field int64, data string) error {
 	return nil
 }
 
+// Parse parses an iso8583 string
+func (iso *IsoStruct) Parse(i string) (IsoStruct, error) {
+	var q IsoStruct
+	spec := iso.Spec
+	mti, rest := extractMTI(i)
+	bitmap, elementString, err := extractBitmap(rest)
+
+	if err != nil {
+		return q, err
+	}
+
+	// validat the mti
+	_, err = MtiValidator(mti)
+	if err != nil {
+		return q, err
+	}
+
+	elements, err := unpackElements(bitmap, elementString, spec)
+	if err != nil {
+		return q, err
+	}
+
+	q = IsoStruct{Spec: spec, Mti: mti, Bitmap: bitmap, Elements: elements}
+	return q, nil
+}
+
 func (iso *IsoStruct) packElements() (string, error) {
 	var str string
 	bitmap := iso.Bitmap
@@ -82,7 +108,7 @@ func (iso *IsoStruct) packElements() (string, error) {
 	for index := 1; index < len(bitmap); index++ { // index 0 of bitmap isn't need here
 		if bitmap[index] == 1 { // if the field is present
 			field := int64(index + 1)
-			fieldDescription := elementsSpec[field]
+			fieldDescription := elementsSpec.fields[int(field)]
 			if fieldDescription.LenType == "fixed" {
 				str = str + elementsMap[field]
 			} else {
@@ -159,9 +185,9 @@ func getVariableLengthFromString(str string) (int64, error) {
 	return num, fmt.Errorf("%s is an invalid LenType", str)
 }
 
-func extractFieldFromElements(spec []FieldDescription, field int, str string) (string, string, error) {
+func extractFieldFromElements(spec Spec, field int, str string) (string, string, error) {
 	var extractedField, substr string
-	fieldDescription := spec[field]
+	fieldDescription := spec.fields[int(field)]
 
 	if fieldDescription.LenType == "fixed" {
 		extractedField = str[0:fieldDescription.MaxLen]
@@ -186,7 +212,7 @@ func extractFieldFromElements(spec []FieldDescription, field int, str string) (s
 	return extractedField, substr, nil
 }
 
-func unpackElements(bitmap []int64, elements string, spec []FieldDescription) (ElementsType, error) {
+func unpackElements(bitmap []int64, elements string, spec Spec) (ElementsType, error) {
 	var elem ElementsType
 	var m = make(map[int64]string)
 	currentString := elements
@@ -210,45 +236,26 @@ func unpackElements(bitmap []int64, elements string, spec []FieldDescription) (E
 	return elem, nil
 }
 
-// Parse parses an iso8583 string
-func Parse(iso string, spec []FieldDescription) (IsoStruct, error) {
-	var q IsoStruct
-	mti, rest := extractMTI(iso)
-	bitmap, elementString, err := extractBitmap(rest)
-
-	if err != nil {
-		return q, err
-	}
-
-	// validat the mti
-	_, err = MtiValidator(mti)
-	if err != nil {
-		return q, err
-	}
-
-	elements, err := unpackElements(bitmap, elementString, spec)
-	if err != nil {
-		return q, err
-	}
-
-	q = IsoStruct{Spec: spec, Mti: mti, Bitmap: bitmap, Elements: elements}
-	return q, nil
-}
-
-// Empty returns an empty IsoStructs
-func Empty(spec []FieldDescription, bitmaps int64) IsoStruct {
+// NewISOStruct creates a new IsoStruct
+// based on the content of the specfile provided
+func NewISOStruct(filename string, secondaryBitmap bool) IsoStruct {
 	var iso IsoStruct
 	var bitmap []int64
 	mti := MtiType{mti: ""}
 
-	if bitmaps == 2 {
+	if secondaryBitmap == true {
 		bitmap = make([]int64, 128)
 		bitmap[0] = 1
 	} else {
 		bitmap = make([]int64, 64)
 	}
+
 	emap := make(map[int64]string)
 	elements := ElementsType{elements: emap}
+	spec, err := SpecFromFile(filename)
+	if err != nil {
+		panic(err) // we panic because we don't want to do anything without a valid specfile
+	}
 	iso = IsoStruct{Spec: spec, Mti: mti, Bitmap: bitmap, Elements: elements}
 	return iso
 }

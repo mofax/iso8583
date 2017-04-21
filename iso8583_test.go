@@ -14,7 +14,8 @@ func TestISOParse(t *testing.T) {
 	// Field (41) = 12340001
 	// Field (49) = 840
 	isomsg := "02003220000000808000000010000000001500120604120000000112340001840"
-	parsed, err := Parse(isomsg, GetSpecISO8583())
+	isostruct := NewISOStruct("spec1987.yml", true)
+	parsed, err := isostruct.Parse(isomsg)
 	if err != nil {
 		fmt.Println(err)
 		t.Errorf("parse iso message failed")
@@ -32,7 +33,7 @@ func TestISOParse(t *testing.T) {
 }
 
 func TestEmpty(t *testing.T) {
-	one := Empty(GetSpecISO8583(), 1)
+	one := NewISOStruct("spec1987.yml", false)
 
 	if one.Mti.String() != "" {
 		t.Errorf("Empty generates invalid MTI")

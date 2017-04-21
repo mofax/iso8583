@@ -32,11 +32,11 @@ func BitMapArrayToHex(arr []int64) (string, error) {
 	m[15] = "f"
 
 	if (length % 4) != 0 {
-		return "", errors.New("invalid iso8583 bitmap array")
+		return "", errors.New("Invalid iso8583 bitmap array")
 	}
 
 	if ((length / 4) % 2) != 0 {
-		return "", errors.New("invalid iso8583 bitmap array")
+		return "", errors.New("Invalid iso8583 bitmap array")
 	}
 	var hexString string
 	var buf float64
