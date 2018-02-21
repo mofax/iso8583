@@ -117,7 +117,7 @@ func (iso *IsoStruct) packElements() (string, error) {
 					return str, err
 				}
 				actualLength := len(elementsMap[field])
-				paddedLength := leftPad(string(actualLength), int(lengthType), "0")
+				paddedLength := leftPad(strconv.Itoa(actualLength), int(lengthType), "0")
 				str = str + (paddedLength + elementsMap[field])
 			}
 		}
@@ -139,7 +139,7 @@ func extractBitmap(rest string) ([]int64, string, error) {
 
 	// remove first two characters
 	frontHex := rest[0:2]
-	fmt.Println(frontHex)
+	//fmt.Println(frontHex)
 	inDec, err := hex.DecodeString(frontHex)
 	if err != nil {
 		return bitmap, elementsString, err
