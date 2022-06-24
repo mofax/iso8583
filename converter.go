@@ -24,12 +24,12 @@ func BitMapArrayToHex(arr []int64) (string, error) {
 	m[7] = "7"
 	m[8] = "8"
 	m[9] = "9"
-	m[10] = "a"
-	m[11] = "b"
-	m[12] = "c"
-	m[13] = "d"
-	m[14] = "e"
-	m[15] = "f"
+	m[10] = "A"
+	m[11] = "B"
+	m[12] = "C"
+	m[13] = "D"
+	m[14] = "E"
+	m[15] = "F"
 
 	if (length % 4) != 0 {
 		return "", errors.New("Invalid iso8583 bitmap array")
