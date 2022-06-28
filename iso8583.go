@@ -128,7 +128,7 @@ func (iso *IsoStruct) packElements() (string, error) {
 // extractMTI extracts the mti from an iso8583 string
 func extractMTI(str string) (MtiType, string) {
 	mti := str[0:4]
-	rest := str[4:len(str)]
+	rest := str[4:]
 
 	return MtiType{mti: mti}, rest
 }
@@ -161,7 +161,7 @@ func extractBitmap(rest string) ([]int64, string, error) {
 	}
 
 	bitmapHexString := rest[0:bitmapHexLength]
-	elementsString = rest[bitmapHexLength:len(rest)]
+	elementsString = rest[bitmapHexLength:]
 
 	bitmap, err = HexToBitmapArray(bitmapHexString)
 	if err != nil {
@@ -191,22 +191,22 @@ func extractFieldFromElements(spec Spec, field int, str string) (string, string,
 
 	if fieldDescription.LenType == "fixed" {
 		extractedField = str[0:fieldDescription.MaxLen]
-		substr = str[fieldDescription.MaxLen:len(str)]
+		substr = str[fieldDescription.MaxLen:]
 	} else {
 		// varianle length fields have their lengths embedded into the string
 		length, err := getVariableLengthFromString(fieldDescription.LenType)
 		if err != nil {
 			return extractedField, substr, fmt.Errorf("spec error: field %d: %s", field, err.Error())
 		}
-		fieldLength := str[0:length]       // get the embedded length
-		tempSubstr := str[length:len(str)] // get the string with the length removed
+		fieldLength := str[0:length] // get the embedded length
+		tempSubstr := str[length:]   // get the string with the length removed
 		fieldLengthInt, err := strconv.ParseInt(fieldLength, 10, 64)
 		if err != nil {
 			return extractedField, substr, err
 		}
 
 		extractedField = tempSubstr[0:fieldLengthInt]
-		substr = tempSubstr[fieldLengthInt:len(tempSubstr)]
+		substr = tempSubstr[fieldLengthInt:]
 	}
 
 	return extractedField, substr, nil
@@ -243,7 +243,7 @@ func NewISOStruct(filename string, secondaryBitmap bool) IsoStruct {
 	var bitmap []int64
 	mti := MtiType{mti: ""}
 
-	if secondaryBitmap == true {
+	if secondaryBitmap {
 		bitmap = make([]int64, 128)
 		bitmap[0] = 1
 	} else {
