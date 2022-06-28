@@ -20,6 +20,9 @@ func TestBitMapArrayToHexInvalid(t *testing.T) {
 func TestBitMapArrayToHex(t *testing.T) {
 	arr := []int64{1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0}
 	bitmap, anotherErr := BitMapArrayToHex(arr)
+	if bitmap != "bb16" {
+		t.Errorf("BitMapArrayToHex() is generating a bitmap %s instead of bb16", bitmap)
+	}
 	if anotherErr == nil {
 		if len(bitmap) != (len(arr) / 4) {
 			t.Errorf("hex string should be length %d not %d", len(arr)/4, len(bitmap))
@@ -31,20 +34,27 @@ func TestBitMapArrayToHex(t *testing.T) {
 }
 
 func TestHexToBinaryArray(t *testing.T) {
-	arr, err := HexToBitmapArray("a354abcd4d3a3e4a")
+	arr, err := HexToBitmapArray("bb16")
+	expected := []int64{1, 0, 1, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0}
 	if err != nil {
 		t.Errorf("isn't parsing valid hex string")
 	}
 
-	if len(arr) != 64 {
+	if len(arr) != 16 {
 		t.Errorf("HexToBitmapArray() is generating a length %d instead of 64", len(arr))
+	}
+
+	// check that the array is the same as the expected array
+	for i := 0; i < len(arr); i++ {
+		if arr[i] != expected[i] {
+			t.Errorf("isn't parsing valid hex string")
+		}
 	}
 
 	_, anerr := HexToBitmapArray("a354abcd4d3")
 	if anerr == nil {
 		t.Errorf("HexToBitmap array should throw an error on invalid hex")
 	}
-	// fmt.Println(converted)
 }
 
 func TestBinaryandBack(t *testing.T) {

@@ -7,9 +7,7 @@ import (
 )
 
 // ValidationError happens when validation fails
-type ValidationError struct {
-	message string
-}
+type ValidationError struct{}
 
 // MtiValidator validates and iso8583 mti
 func MtiValidator(mti MtiType) (bool, error) {
@@ -45,7 +43,7 @@ func VariableLengthIntegerValidator(field int, min int, max int, data string) (b
 	var verify bool
 	dataLen := len(data)
 	verify = (dataLen >= min) && (dataLen <= max)
-	if verify == true {
+	if verify {
 		return verify, nil
 	}
 	return verify, fmt.Errorf("field %d: expected max length %d and min length %d found %d", field, max, min, dataLen)
@@ -57,7 +55,7 @@ func VariableLengthAlphaNumericValidator(field int, min int, max int, data strin
 	var verify bool
 	dataLen := len(data)
 	verify = (dataLen >= max) && (dataLen <= max)
-	if verify == true {
+	if verify {
 		return verify, nil
 	}
 	return verify, fmt.Errorf("field %d: expected max length %d and min length %d", field, max, min)
