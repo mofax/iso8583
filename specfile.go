@@ -3,7 +3,7 @@ package iso8583
 import (
 	"io/ioutil"
 
-	"github.com/go-yaml/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 // FieldDescription contains fields that describes an iso8583 Field
