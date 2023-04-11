@@ -1,7 +1,7 @@
 package iso8583
 
 import (
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
@@ -24,7 +24,7 @@ type Spec struct {
 // readFromFile reads a yaml specfile and loads
 // and iso8583 spec from it
 func (s *Spec) readFromFile(filename string) error {
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
