@@ -1,9 +1,9 @@
 package iso8583
 
 import (
-	"io/ioutil"
+	"os"
 
-	"github.com/go-yaml/yaml"
+	"gopkg.in/yaml.v3"
 )
 
 // FieldDescription contains fields that describes an iso8583 Field
@@ -24,7 +24,7 @@ type Spec struct {
 // readFromFile reads a yaml specfile and loads
 // and iso8583 spec from it
 func (s *Spec) readFromFile(filename string) error {
-	content, err := ioutil.ReadFile(filename)
+	content, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
